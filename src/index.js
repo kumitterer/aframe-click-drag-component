@@ -1,4 +1,5 @@
 import deepEqual from 'deep-equal';
+import { Linter } from 'eslint';
 
 const COMPONENT_NAME = 'click-drag';
 const DRAG_START_EVENT = 'dragstart';
@@ -39,16 +40,16 @@ function cameraPositionToVec3(camera, vec3) {
   vec3.set(
     camera.components.position.data.x,
     camera.components.position.data.y,
-    camera.components.position.data.z
+    camera.components.position.data.z,
   );
 
-  forEachParent(camera, element => {
+  forEachParent(camera, (element) => {
 
     if (element.components && element.components.position) {
       vec3.set(
         vec3.x + element.components.position.data.x,
         vec3.y + element.components.position.data.y,
-        vec3.z + element.components.position.data.z
+        vec3.z + element.components.position.data.z,
       );
     }
 
@@ -81,14 +82,14 @@ const {unproject} = (function unprojectFunction() {
 
       initialized = initialized || initialize(THREE);
 
-      vector.applyMatrix4(matrix.getInverse(threeCamera.projectionMatrix));
+      const matrixInv = matrix.copy(threeCamera.projectionMatrix).invert();
+      vector.applyMatrix4(matrixInv);
 
       return localToWorld(THREE, threeCamera, vector);
 
     },
   };
 }());
-
 
 const {screenCoordsToDirection} = (function screenCoordsToDirectionFunction() {
 
@@ -108,7 +109,7 @@ const {screenCoordsToDirection} = (function screenCoordsToDirectionFunction() {
     screenCoordsToDirection(
       THREE,
       aframeCamera,
-      {x: clientX, y: clientY}
+      {x: clientX, y: clientY},
     ) {
 
       initialized = initialized || initialize(THREE);
@@ -171,7 +172,7 @@ const {directionToWorldCoords} = (function directionToWorldCoordsFunction() {
       aframeCamera,
       camera,
       {x: directionX, y: directionY, z: directionZ},
-      depth
+      depth,
     ) {
 
       initialized = initialized || initialize(THREE);
@@ -183,7 +184,7 @@ const {directionToWorldCoords} = (function directionToWorldCoordsFunction() {
       const newPosition = rayPlaneIntersection(
         camera.getWorldDirection(),
         depth,
-        direction
+        direction,
       );
 
       // Reposition back to the camera position
@@ -225,7 +226,7 @@ const {selectItem} = (function selectItemFunction() {
       const {x: directionX, y: directionY, z: directionZ} = screenCoordsToDirection(
         THREE,
         camera,
-        {x: clientX, y: clientY}
+        {x: clientX, y: clientY},
       );
 
       cameraPositionToVec3(camera, cameraPosAsVec3);
@@ -236,18 +237,22 @@ const {selectItem} = (function selectItemFunction() {
       // Push meshes onto list of objects to intersect.
       // TODO: Can we do this at some other point instead of every time a ray is
       // cast? Is that a micro optimization?
-      const objects = Array.from(
-        camera.sceneEl.querySelectorAll(`[${selector}]`)
-      ).map(object => object.object3D);
+      let objects = Array.from(
+        camera.sceneEl.querySelectorAll(`[${selector}]`),
+      ).map((object) => object.object3D);
 
       const recursive = true;
+
+      objects = objects.filter((object) => object !== undefined);
+
+      console.log('objects', objects);
 
       const intersected = raycaster
         .intersectObjects(objects, recursive)
         // Only keep intersections against objects that have a reference to an entity.
-        .filter(intersection => !!intersection.object.el)
+        .filter((intersection) => !!intersection.object.el)
         // Only keep ones that are visible
-        .filter(intersection => intersection.object.parent.visible)
+        .filter((intersection) => intersection.object.parent.visible)
         // The first element is the closest
         [0]; // eslint-disable-line no-unexpected-multiline
 
@@ -261,7 +266,7 @@ const {selectItem} = (function selectItemFunction() {
       // At the specified intersection point
       plane.setFromNormalAndCoplanarPoint(
         camera.components.camera.camera.getWorldDirection().clone().negate(),
-        point.clone().sub(cameraPosAsVec3)
+        point.clone().sub(cameraPosAsVec3),
       );
 
       const depth = plane.constant;
@@ -297,7 +302,7 @@ function dragItem(THREE, element, offset, camera, depth, mouseInfo) {
 
   const activeCamera = element.sceneEl.systems.camera.activeCameraEl;
 
-  const isChildOfActiveCamera = someParent(element, parent => parent === activeCamera);
+  const isChildOfActiveCamera = someParent(element, (parent) => parent === activeCamera);
 
   function onMouseMove({clientX, clientY}) {
 
@@ -306,7 +311,7 @@ function dragItem(THREE, element, offset, camera, depth, mouseInfo) {
     const direction = screenCoordsToDirection(
       THREE,
       camera,
-      {x: clientX, y: clientY}
+      {x: clientX, y: clientY},
     );
 
     const {x, y, z} = directionToWorldCoords(
@@ -314,9 +319,8 @@ function dragItem(THREE, element, offset, camera, depth, mouseInfo) {
       camera,
       camera.components.camera.camera,
       direction,
-      depth
+      depth,
     );
-
 
     let rotationDiff;
 
@@ -359,7 +363,9 @@ function dragItem(THREE, element, offset, camera, depth, mouseInfo) {
       nextPosition.z = offsetVector.z;
     }
 
-    element.emit(DRAG_MOVE_EVENT, {nextPosition, nextRotation, clientX, clientY});
+    element.emit(DRAG_MOVE_EVENT, {
+      nextPosition, nextRotation, clientX, clientY,
+    });
 
     element.setAttribute('position', nextPosition);
 
@@ -384,7 +390,7 @@ function dragItem(THREE, element, offset, camera, depth, mouseInfo) {
   camera.addEventListener('componentchanged', onCameraChange);
 
   // The "unlisten" function
-  return _ => {
+  return (_) => {
     document.removeEventListener('mousemove', onMouseMove);
     document.removeEventListener('touchmove', onTouchMove);
     camera.removeEventListener('componentchanged', onCameraChange);
@@ -420,7 +426,7 @@ const {didMount, didUnmount} = (function getDidMountAndUnmount() {
       // Continuously clean up so we don't get huge logs built up
       cleanUpPositionLog();
       positionLog.push({
-        position: Object.assign({}, nextPosition),
+        position: {...nextPosition},
         time: performance.now(),
       });
     }
@@ -446,7 +452,7 @@ const {didMount, didUnmount} = (function getDidMountAndUnmount() {
           {
             clientX,
             clientY,
-          }
+          },
         );
 
         draggedElement = element;
@@ -460,7 +466,7 @@ const {didMount, didUnmount} = (function getDidMountAndUnmount() {
 
         element.addEventListener(DRAG_MOVE_EVENT, onDragged);
 
-        removeDragListeners = _ => {
+        removeDragListeners = (_) => {
           element.removeEventListener(DRAG_MOVE_EVENT, onDragged);
           // eslint-disable-next-line no-unused-expressions
           removeDragItemListeners && removeDragItemListeners();
@@ -501,7 +507,9 @@ const {didMount, didUnmount} = (function getDidMountAndUnmount() {
 
       draggedElement.emit(
         DRAG_END_EVENT,
-        Object.assign({}, dragInfo, {clientX, clientY, velocity})
+        {
+          ...dragInfo, clientX, clientY, velocity,
+        },
       );
 
       removeDragListeners && removeDragListeners(); // eslint-disable-line no-unused-expressions
@@ -527,7 +535,7 @@ const {didMount, didUnmount} = (function getDidMountAndUnmount() {
       document.addEventListener('touchstart', onTouchStart);
       document.addEventListener('touchend', onTouchEnd);
 
-      removeClickListeners = _ => {
+      removeClickListeners = (_) => {
         document.removeEventListener('mousedown', onMouseDown);
         document.removeEventListener('mouseup', onMouseUp);
 
@@ -590,7 +598,7 @@ const {didMount, didUnmount} = (function getDidMountAndUnmount() {
  */
 export default function aframeDraggableComponent(aframe, componentName = COMPONENT_NAME) {
 
-  const THREE = aframe.THREE;
+  const {THREE} = aframe;
 
   /**
    * Draggable component for A-Frame.
