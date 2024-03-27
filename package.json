@@ -1,6 +1,6 @@
 {
   "name": "aframe-click-drag-component",
-  "version": "3.0.1",
+  "version": "4.0.0",
   "description": "Click & Drag component for A-Frame.",
   "main": "src/index.js",
   "scripts": {
@@ -19,12 +19,12 @@
     "mozvr",
     "webvr"
   ],
-  "author": "Jess Telford <hi@jes.st>",
+  "author": "Kumi <aframe-click-drag-component@kumi.email>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/jesstelford/aframe-click-drag-component/issues"
+    "url": "https://git.private.coffee/kumi/aframe-click-drag-component/issues"
   },
-  "homepage": "https://github.com/jesstelford/aframe-click-drag-component#readme",
+  "homepage": "https://git.private.coffee/kumi/aframe-click-drag-component#readme",
   "peerDependencies": {
     "aframe": "^1.5.0"
   },
