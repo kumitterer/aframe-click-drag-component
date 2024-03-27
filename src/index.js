@@ -1,15 +1,13 @@
-import deepEqual from 'deep-equal';
-import { Linter } from 'eslint';
+import deepEqual from "deep-equal";
 
-const COMPONENT_NAME = 'click-drag';
-const DRAG_START_EVENT = 'dragstart';
-const DRAG_MOVE_EVENT = 'dragmove';
-const DRAG_END_EVENT = 'dragend';
+const COMPONENT_NAME = "click-drag";
+const DRAG_START_EVENT = "dragstart";
+const DRAG_MOVE_EVENT = "dragmove";
+const DRAG_END_EVENT = "dragend";
 
 const TIME_TO_KEEP_LOG = 100;
 
 function forceWorldUpdate(threeElement) {
-
   let element = threeElement;
   while (element.parent) {
     element = element.parent;
@@ -36,25 +34,21 @@ function someParent(element, lambda) {
 }
 
 function cameraPositionToVec3(camera, vec3) {
-
   vec3.set(
     camera.components.position.data.x,
     camera.components.position.data.y,
-    camera.components.position.data.z,
+    camera.components.position.data.z
   );
 
   forEachParent(camera, (element) => {
-
     if (element.components && element.components.position) {
       vec3.set(
         vec3.x + element.components.position.data.x,
         vec3.y + element.components.position.data.y,
-        vec3.z + element.components.position.data.z,
+        vec3.z + element.components.position.data.z
       );
     }
-
   });
-
 }
 
 function localToWorld(THREE, threeCamera, vector) {
@@ -62,8 +56,7 @@ function localToWorld(THREE, threeCamera, vector) {
   return threeCamera.localToWorld(vector);
 }
 
-const {unproject} = (function unprojectFunction() {
-
+const { unproject } = (function unprojectFunction() {
   let initialized = false;
 
   let matrix;
@@ -75,9 +68,7 @@ const {unproject} = (function unprojectFunction() {
   }
 
   return {
-
     unproject(THREE, vector, camera) {
-
       const threeCamera = camera.components.camera.camera;
 
       initialized = initialized || initialize(THREE);
@@ -86,52 +77,46 @@ const {unproject} = (function unprojectFunction() {
       vector.applyMatrix4(matrixInv);
 
       return localToWorld(THREE, threeCamera, vector);
-
     },
   };
-}());
+})();
 
-const {screenCoordsToDirection} = (function screenCoordsToDirectionFunction() {
+const { screenCoordsToDirection } =
+  (function screenCoordsToDirectionFunction() {
+    let initialized = false;
 
-  let initialized = false;
+    let mousePosAsVec3;
+    let cameraPosAsVec3;
 
-  let mousePosAsVec3;
-  let cameraPosAsVec3;
+    function initialize(THREE) {
+      mousePosAsVec3 = new THREE.Vector3();
+      cameraPosAsVec3 = new THREE.Vector3();
 
-  function initialize(THREE) {
-    mousePosAsVec3 = new THREE.Vector3();
-    cameraPosAsVec3 = new THREE.Vector3();
+      return true;
+    }
 
-    return true;
-  }
+    return {
+      screenCoordsToDirection(THREE, aframeCamera, { x: clientX, y: clientY }) {
+        initialized = initialized || initialize(THREE);
 
-  return {
-    screenCoordsToDirection(
-      THREE,
-      aframeCamera,
-      {x: clientX, y: clientY},
-    ) {
+        // scale mouse coordinates down to -1 <-> +1
+        const scene = document.querySelector("a-scene");
+        const bounds = scene.canvas.getBoundingClientRect();
+        const left = clientX - bounds.left;
+        const top = clientY - bounds.top;
+        const mouseX = (left / bounds.width) * 2 - 1;
+        const mouseY = -((top / bounds.height) * 2) + 1;
 
-      initialized = initialized || initialize(THREE);
+        mousePosAsVec3.set(mouseX, mouseY, -1);
+        const projectedVector = unproject(THREE, mousePosAsVec3, aframeCamera);
+        cameraPositionToVec3(aframeCamera, cameraPosAsVec3);
 
-      // scale mouse coordinates down to -1 <-> +1
-      const scene = document.querySelector('a-scene');
-      const bounds = scene.canvas.getBoundingClientRect();
-      const left = clientX - bounds.left;
-      const top = clientY - bounds.top;
-      const mouseX = ((left / bounds.width) * 2) - 1;
-      const mouseY = -((top / bounds.height) * 2) + 1;
-
-      mousePosAsVec3.set(mouseX, mouseY, -1);
-      const projectedVector = unproject(THREE, mousePosAsVec3, aframeCamera);
-      cameraPositionToVec3(aframeCamera, cameraPosAsVec3);
-
-      // Get the unit length direction vector from the camera's position
-      const {x, y, z} = projectedVector.sub(cameraPosAsVec3).normalize();
-      return {x, y, z};
-    },
-  };
-}());
+        // Get the unit length direction vector from the camera's position
+        const { x, y, z } = projectedVector.sub(cameraPosAsVec3).normalize();
+        return { x, y, z };
+      },
+    };
+  })();
 
 /**
  * @param planeNormal {THREE.Vector3}
@@ -146,8 +131,7 @@ function rayPlaneIntersection(planeNormal, planeConstant, rayDirection) {
   return rayDirection.multiplyScalar(distanceToPlane);
 }
 
-const {directionToWorldCoords} = (function directionToWorldCoordsFunction() {
-
+const { directionToWorldCoords } = (function directionToWorldCoordsFunction() {
   let initialized = false;
 
   let direction;
@@ -171,33 +155,33 @@ const {directionToWorldCoords} = (function directionToWorldCoordsFunction() {
       THREE,
       aframeCamera,
       camera,
-      {x: directionX, y: directionY, z: directionZ},
-      depth,
+      { x: directionX, y: directionY, z: directionZ },
+      depth
     ) {
-
       initialized = initialized || initialize(THREE);
 
       cameraPositionToVec3(aframeCamera, cameraPosAsVec3);
       direction.set(directionX, directionY, directionZ);
 
+      let camerasWorldDirection = new THREE.Vector3();
+      camera.getWorldDirection(camerasWorldDirection);
+
       // A line from the camera position toward (and through) the plane
       const newPosition = rayPlaneIntersection(
-        camera.getWorldDirection(),
+        camerasWorldDirection,
         depth,
-        direction,
+        direction
       );
 
       // Reposition back to the camera position
-      const {x, y, z} = newPosition.add(cameraPosAsVec3);
+      const { x, y, z } = newPosition.add(cameraPosAsVec3);
 
-      return {x, y, z};
-
+      return { x, y, z };
     },
   };
-}());
+})();
 
-const {selectItem} = (function selectItemFunction() {
-
+const { selectItem } = (function selectItemFunction() {
   let initialized = false;
 
   let cameraPosAsVec3;
@@ -220,14 +204,13 @@ const {selectItem} = (function selectItemFunction() {
 
   return {
     selectItem(THREE, selector, camera, clientX, clientY) {
-
       initialized = initialized || initialize(THREE);
 
-      const {x: directionX, y: directionY, z: directionZ} = screenCoordsToDirection(
-        THREE,
-        camera,
-        {x: clientX, y: clientY},
-      );
+      const {
+        x: directionX,
+        y: directionY,
+        z: directionZ,
+      } = screenCoordsToDirection(THREE, camera, { x: clientX, y: clientY });
 
       cameraPositionToVec3(camera, cameraPosAsVec3);
       directionAsVec3.set(directionX, directionY, directionZ);
@@ -238,54 +221,60 @@ const {selectItem} = (function selectItemFunction() {
       // TODO: Can we do this at some other point instead of every time a ray is
       // cast? Is that a micro optimization?
       let objects = Array.from(
-        camera.sceneEl.querySelectorAll(`[${selector}]`),
+        camera.sceneEl.querySelectorAll(`[${selector}]`)
       ).map((object) => object.object3D);
 
       const recursive = true;
 
       objects = objects.filter((object) => object !== undefined);
 
-      console.log('objects', objects);
-
       const intersected = raycaster
         .intersectObjects(objects, recursive)
         // Only keep intersections against objects that have a reference to an entity.
         .filter((intersection) => !!intersection.object.el)
         // Only keep ones that are visible
-        .filter((intersection) => intersection.object.parent.visible)
-        // The first element is the closest
-        [0]; // eslint-disable-line no-unexpected-multiline
+        .filter((intersection) => intersection.object.parent.visible)[0]; // The first element is the closest // eslint-disable-line no-unexpected-multiline
 
       if (!intersected) {
         return {};
       }
 
-      const {point, object} = intersected;
+      const { point, object } = intersected;
 
       // Aligned to the world direction of the camera
       // At the specified intersection point
+      var camerasWorldDirection = new THREE.Vector3();
+      camera.components.camera.camera.getWorldDirection(camerasWorldDirection);
+
       plane.setFromNormalAndCoplanarPoint(
-        camera.components.camera.camera.getWorldDirection().clone().negate(),
-        point.clone().sub(cameraPosAsVec3),
+        camerasWorldDirection.clone().negate(),
+        point.clone().sub(cameraPosAsVec3)
       );
 
       const depth = plane.constant;
 
-      const offset = point.sub(object.getWorldPosition());
+      var objectsWorldPosition = new THREE.Vector3();
+      object.getWorldPosition(objectsWorldPosition);
 
-      return {depth, offset, element: object.el};
+      const offset = point.sub(objectsWorldPosition);
 
+      return { depth, offset, element: object.el };
     },
   };
-}());
+})();
 
 function dragItem(THREE, element, offset, camera, depth, mouseInfo) {
-
   const threeCamera = camera.components.camera.camera;
 
   // Setting up for rotation calculations
-  const startCameraRotationInverse = threeCamera.getWorldQuaternion().inverse();
-  const startElementRotation = element.object3D.getWorldQuaternion();
+  var camerasQuaternion = new THREE.Quaternion();
+  threeCamera.getWorldQuaternion(camerasQuaternion);
+
+  var objectsQuaternion = new THREE.Quaternion();
+  element.object3D.getWorldQuaternion(objectsQuaternion);
+
+  const startCameraRotationInverse = camerasQuaternion.invert();
+  const startElementRotation = objectsQuaternion;
   const elementRotationOrder = element.object3D.rotation.order;
 
   const rotationQuaternion = new THREE.Quaternion();
@@ -295,31 +284,32 @@ function dragItem(THREE, element, offset, camera, depth, mouseInfo) {
   let lastMouseInfo = mouseInfo;
 
   const nextRotation = {
-    x: THREE.Math.radToDeg(rotationEuler.x),
-    y: THREE.Math.radToDeg(rotationEuler.y),
-    z: THREE.Math.radToDeg(rotationEuler.z),
+    x: THREE.MathUtils.radToDeg(rotationEuler.x),
+    y: THREE.MathUtils.radToDeg(rotationEuler.y),
+    z: THREE.MathUtils.radToDeg(rotationEuler.z),
   };
 
   const activeCamera = element.sceneEl.systems.camera.activeCameraEl;
 
-  const isChildOfActiveCamera = someParent(element, (parent) => parent === activeCamera);
+  const isChildOfActiveCamera = someParent(
+    element,
+    (parent) => parent === activeCamera
+  );
 
-  function onMouseMove({clientX, clientY}) {
+  function onMouseMove({ clientX, clientY }) {
+    lastMouseInfo = { clientX, clientY };
 
-    lastMouseInfo = {clientX, clientY};
+    const direction = screenCoordsToDirection(THREE, camera, {
+      x: clientX,
+      y: clientY,
+    });
 
-    const direction = screenCoordsToDirection(
-      THREE,
-      camera,
-      {x: clientX, y: clientY},
-    );
-
-    const {x, y, z} = directionToWorldCoords(
+    const { x, y, z } = directionToWorldCoords(
       THREE,
       camera,
       camera.components.camera.camera,
       direction,
-      depth,
+      depth
     );
 
     let rotationDiff;
@@ -330,8 +320,11 @@ function dragItem(THREE, element, offset, camera, depth, mouseInfo) {
     // rotate the offset
     offsetVector.set(offset.x, offset.y, offset.z);
 
+    var camerasQuaternion = new THREE.Quaternion();
+    threeCamera.getWorldQuaternion(camerasQuaternion);
+
     // Then add the current camera rotation
-    rotationDiff = rotationQuaternion.multiply(threeCamera.getWorldQuaternion());
+    rotationDiff = rotationQuaternion.multiply(camerasQuaternion);
 
     offsetVector.applyQuaternion(rotationDiff);
 
@@ -342,16 +335,19 @@ function dragItem(THREE, element, offset, camera, depth, mouseInfo) {
       rotationEuler.setFromQuaternion(rotationDiff, elementRotationOrder);
     }
 
-    nextRotation.x = THREE.Math.radToDeg(rotationEuler.x);
-    nextRotation.y = THREE.Math.radToDeg(rotationEuler.y);
-    nextRotation.z = THREE.Math.radToDeg(rotationEuler.z);
+    nextRotation.x = THREE.MathUtils.radToDeg(rotationEuler.x);
+    nextRotation.y = THREE.MathUtils.radToDeg(rotationEuler.y);
+    nextRotation.z = THREE.MathUtils.radToDeg(rotationEuler.z);
 
-    const nextPosition = {x: x - offsetVector.x, y: y - offsetVector.y, z: z - offsetVector.z};
+    const nextPosition = {
+      x: x - offsetVector.x,
+      y: y - offsetVector.y,
+      z: z - offsetVector.z,
+    };
 
     // When the element has parents, we need to convert its new world position
     // into new local position of its parent element
     if (element.parentEl !== element.sceneEl) {
-
       // The new world position
       offsetVector.set(nextPosition.x, nextPosition.y, nextPosition.z);
 
@@ -364,50 +360,51 @@ function dragItem(THREE, element, offset, camera, depth, mouseInfo) {
     }
 
     element.emit(DRAG_MOVE_EVENT, {
-      nextPosition, nextRotation, clientX, clientY,
+      nextPosition,
+      nextRotation,
+      clientX,
+      clientY,
     });
 
-    element.setAttribute('position', nextPosition);
+    element.setAttribute("position", nextPosition);
 
-    element.setAttribute('rotation', nextRotation);
+    element.setAttribute("rotation", nextRotation);
   }
 
-  function onTouchMove({changedTouches: [touchInfo]}) {
+  function onTouchMove({ changedTouches: [touchInfo] }) {
     onMouseMove(touchInfo);
   }
 
-  function onCameraChange({detail}) {
+  function onCameraChange({ detail }) {
     if (
-      (detail.name === 'position' || detail.name === 'rotation')
-      && !deepEqual(detail.oldData, detail.newData)
+      (detail.name === "position" || detail.name === "rotation") &&
+      !deepEqual(detail.oldData, detail.newData)
     ) {
       onMouseMove(lastMouseInfo);
     }
   }
 
-  document.addEventListener('mousemove', onMouseMove);
-  document.addEventListener('touchmove', onTouchMove);
-  camera.addEventListener('componentchanged', onCameraChange);
+  document.addEventListener("mousemove", onMouseMove);
+  document.addEventListener("touchmove", onTouchMove);
+  camera.addEventListener("componentchanged", onCameraChange);
 
   // The "unlisten" function
   return (_) => {
-    document.removeEventListener('mousemove', onMouseMove);
-    document.removeEventListener('touchmove', onTouchMove);
-    camera.removeEventListener('componentchanged', onCameraChange);
+    document.removeEventListener("mousemove", onMouseMove);
+    document.removeEventListener("touchmove", onTouchMove);
+    camera.removeEventListener("componentchanged", onCameraChange);
   };
 }
 
 // Closure to close over the removal of the event listeners
-const {didMount, didUnmount} = (function getDidMountAndUnmount() {
-
+const { didMount, didUnmount } = (function getDidMountAndUnmount() {
   let removeClickListeners;
   let removeDragListeners;
   const cache = [];
 
   function initialize(THREE, componentName) {
-
     // TODO: Based on a scene from the element passed in?
-    const scene = document.querySelector('a-scene');
+    const scene = document.querySelector("a-scene");
     // delay loading of this as we're not 100% if the scene has loaded yet or not
     let camera;
     let draggedElement;
@@ -416,28 +413,36 @@ const {didMount, didUnmount} = (function getDidMountAndUnmount() {
 
     function cleanUpPositionLog() {
       const now = performance.now();
-      while (positionLog.length && now - positionLog[0].time > TIME_TO_KEEP_LOG) {
+      while (
+        positionLog.length &&
+        now - positionLog[0].time > TIME_TO_KEEP_LOG
+      ) {
         // remove the first element;
         positionLog.shift();
       }
     }
 
-    function onDragged({detail: {nextPosition}}) {
+    function onDragged({ detail: { nextPosition } }) {
       // Continuously clean up so we don't get huge logs built up
       cleanUpPositionLog();
       positionLog.push({
-        position: {...nextPosition},
+        position: { ...nextPosition },
         time: performance.now(),
       });
     }
 
-    function onMouseDown({clientX, clientY}) {
-
-      const {depth, offset, element} = selectItem(THREE, componentName, camera, clientX, clientY);
+    function onMouseDown({ clientX, clientY }) {
+      const { depth, offset, element } = selectItem(
+        THREE,
+        componentName,
+        camera,
+        clientX,
+        clientY
+      );
 
       if (element) {
         // If click-drag is not enabled, return.
-        if (element.getAttribute('click-drag').enabled === 'false') {
+        if (element.getAttribute("click-drag").enabled === "false") {
           return;
         }
 
@@ -452,13 +457,13 @@ const {didMount, didUnmount} = (function getDidMountAndUnmount() {
           {
             clientX,
             clientY,
-          },
+          }
         );
 
         draggedElement = element;
 
         dragInfo = {
-          offset: {x: offset.x, y: offset.y, z: offset.z},
+          offset: { x: offset.x, y: offset.y, z: offset.z },
           depth,
           clientX,
           clientY,
@@ -479,7 +484,6 @@ const {didMount, didUnmount} = (function getDidMountAndUnmount() {
     }
 
     function calculateVelocity() {
-
       if (positionLog.length < 2) {
         return 0;
       }
@@ -495,8 +499,7 @@ const {didMount, didUnmount} = (function getDidMountAndUnmount() {
       };
     }
 
-    function onMouseUp({clientX, clientY}) {
-
+    function onMouseUp({ clientX, clientY }) {
       if (!draggedElement) {
         return;
       }
@@ -505,52 +508,49 @@ const {didMount, didUnmount} = (function getDidMountAndUnmount() {
 
       const velocity = calculateVelocity();
 
-      draggedElement.emit(
-        DRAG_END_EVENT,
-        {
-          ...dragInfo, clientX, clientY, velocity,
-        },
-      );
+      draggedElement.emit(DRAG_END_EVENT, {
+        ...dragInfo,
+        clientX,
+        clientY,
+        velocity,
+      });
 
       removeDragListeners && removeDragListeners(); // eslint-disable-line no-unused-expressions
       removeDragListeners = undefined;
     }
 
-    function onTouchStart({changedTouches: [touchInfo]}) {
+    function onTouchStart({ changedTouches: [touchInfo] }) {
       onMouseDown(touchInfo);
     }
 
-    function onTouchEnd({changedTouches: [touchInfo]}) {
+    function onTouchEnd({ changedTouches: [touchInfo] }) {
       onMouseUp(touchInfo);
     }
 
     function run() {
-
       camera = scene.camera.el;
 
       // TODO: Attach to canvas?
-      document.addEventListener('mousedown', onMouseDown);
-      document.addEventListener('mouseup', onMouseUp);
+      document.addEventListener("mousedown", onMouseDown);
+      document.addEventListener("mouseup", onMouseUp);
 
-      document.addEventListener('touchstart', onTouchStart);
-      document.addEventListener('touchend', onTouchEnd);
+      document.addEventListener("touchstart", onTouchStart);
+      document.addEventListener("touchend", onTouchEnd);
 
       removeClickListeners = (_) => {
-        document.removeEventListener('mousedown', onMouseDown);
-        document.removeEventListener('mouseup', onMouseUp);
+        document.removeEventListener("mousedown", onMouseDown);
+        document.removeEventListener("mouseup", onMouseUp);
 
-        document.removeEventListener('touchstart', onTouchStart);
-        document.removeEventListener('touchend', onTouchEnd);
+        document.removeEventListener("touchstart", onTouchStart);
+        document.removeEventListener("touchend", onTouchEnd);
       };
-
     }
 
     if (scene.hasLoaded) {
       run();
     } else {
-      scene.addEventListener('loaded', run);
+      scene.addEventListener("loaded", run);
     }
-
   }
 
   function tearDown() {
@@ -560,7 +560,6 @@ const {didMount, didUnmount} = (function getDidMountAndUnmount() {
 
   return {
     didMount(element, THREE, componentName) {
-
       if (cache.length === 0) {
         initialize(THREE, componentName);
       }
@@ -571,7 +570,6 @@ const {didMount, didUnmount} = (function getDidMountAndUnmount() {
     },
 
     didUnmount(element) {
-
       const cacheIndex = cache.indexOf(element);
 
       removeDragListeners && removeDragListeners(); // eslint-disable-line no-unused-expressions
@@ -587,18 +585,19 @@ const {didMount, didUnmount} = (function getDidMountAndUnmount() {
       if (cache.length === 0) {
         tearDown();
       }
-
     },
   };
-}());
+})();
 
 /**
  * @param aframe {Object} The Aframe instance to register with
  * @param componentName {String} The component name to use. Default: 'click-drag'
  */
-export default function aframeDraggableComponent(aframe, componentName = COMPONENT_NAME) {
-
-  const {THREE} = aframe;
+export default function aframeDraggableComponent(
+  aframe,
+  componentName = COMPONENT_NAME
+) {
+  const { THREE } = aframe;
 
   /**
    * Draggable component for A-Frame.
@@ -619,7 +618,7 @@ export default function aframeDraggableComponent(aframe, componentName = COMPONE
      *
      * @param oldData
      */
-    update() { },
+    update() {},
 
     /**
      * Called when a component is removed (e.g., via removeAttribute).
