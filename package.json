@@ -1,8 +1,8 @@
 {
-  "name": "aframe-click-drag-component",
+  "name": "@kumitterer/aframe-click-drag-component",
   "version": "4.0.0",
   "description": "Click & Drag component for A-Frame.",
-  "main": "src/index.js",
+  "main": "lib/index.js",
   "scripts": {
     "build-lib": "mkdir -p lib && babel src/index.js -o lib/index.js",
     "prepublishOnly": "npm run build-lib"

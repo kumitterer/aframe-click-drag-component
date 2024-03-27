@@ -1,6 +1,6 @@
 # aframe-click-drag-component
 
-A Click & Drag component for [A-Frame](https://aframe.io). This is a fork of 
+A Click & Drag component for [A-Frame](https://aframe.io). This is a fork of
 the original [aframe-click-drag-component](https://github.com/jesstelford/aframe-click-drag-component)
 to make it work in current versions of A-Frame (tested with 1.5.0).
 
@@ -39,6 +39,7 @@ Emitted with the following info:
 - `clientY` - the final mouse event's `clientY` value
 
 ### Applying click-drag conditionally
+
 You can conditionally apply `click-drag` behaviors by specifying an `enabled`
 attribute in your `click-drag` property:
 
@@ -65,7 +66,12 @@ Use directly from the unpkg CDN:
 
 <body>
   <a-scene>
-    <a-sphere click-drag position="0 1.25 -5" radius="1.25" color="#EF2D5E"></a-sphere>
+    <a-sphere
+      click-drag
+      position="0 1.25 -5"
+      radius="1.25"
+      color="#EF2D5E"
+    ></a-sphere>
     <a-camera look-controls-enabled="false"></a-camera>
   </a-scene>
 </body>
@@ -76,13 +82,13 @@ Use directly from the unpkg CDN:
 Install via npm:
 
 ```bash
-npm install aframe-click-drag-component
+npm install @kumitterer/aframe-click-drag-component
 ```
 
 Then register and use.
 
 ```javascript
-import aframe from 'aframe';
-import registerClickDrag from 'aframe-click-drag-component';
+import aframe from "aframe";
+import registerClickDrag from "@kumitterer/aframe-click-drag-component";
 registerClickDrag(aframe);
 ```
