@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jesstelford/aframe-click-drag-component.git"
+    "url": "git+https://git.private.coffee/kumi/aframe-click-drag-component/"
   },
   "keywords": [
     "aframe",
