@@ -1,12 +1,8 @@
-# Looking for maintainers
-
-I have recently [started a new business](https://mobile.twitter.com/ceteio), which means I no longer have time to maintain this project.
-
-Please [reach out](https://github.com/jesstelford) if you are interested in updating this component to the latest versions of aframe, merging the pending PRs, and resolving the list of issues ❤️
-
 # aframe-click-drag-component
 
-A Click & Drag component for [A-Frame](https://aframe.io).
+A Click & Drag component for [A-Frame](https://aframe.io). This is a fork of 
+the original [aframe-click-drag-component](https://github.com/jesstelford/aframe-click-drag-component)
+to make it work in current versions of A-Frame (tested with 1.5.0).
 
 Entities with the `click-drag` component can be click and dragged around the 3D
 scene. Even works whle the camera is moving or rotating!
