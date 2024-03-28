@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][]
 
+## [4.0.1][] - 2024-03-28
+
+### Update
+
+- Updated README.md with proper usage instructions
+
+## [4.0.0][] - 2024-03-27
+
+### Update
+
+- Support aframe 1.5.0
+- Latest dependencies
+
+### Changed
+
+- Removed a lot of dev dependencies (will have to be replaced)
+
 ## [3.0.1][] - 2016-12-18
 
 ### Update
@@ -87,7 +104,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Click & Drag component for A-Frame.
 
-[Unreleased]: https://github.com/jesstelford/aframe-click-drag-component/compare/v3.0.1...HEAD
+[Unreleased]: https://git.private.coffee/kumi/aframe-click-drag-component/compare/v4.0.1...HEAD
+[4.0.1]: https://git.private.coffee/kumi/aframe-click-drag-component/compare/v4.0.0...v4.0.1
+[4.0.0]: https://git.private.coffee/kumi/aframe-click-drag-component/compare/v3.0.1...v4.0.0
 [3.0.1]: https://github.com/jesstelford/aframe-click-drag-component/compare/v3.0.0...v3.0.1
 [3.0.0]: https://github.com/jesstelford/aframe-click-drag-component/compare/v2.0.0...v3.0.0
 [2.0.0]: https://github.com/jesstelford/aframe-click-drag-component/compare/v1.3.3...v2.0.0
