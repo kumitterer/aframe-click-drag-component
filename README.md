@@ -57,8 +57,8 @@ Use directly from the unpkg CDN:
 
 ```html
 <head>
-  <script src="https://aframe.io/releases/0.3.0/aframe.min.js"></script>
-  <script src="https://unpkg.com/aframe-click-drag-component"></script>
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  <script src="https://unpkg.com/@kumitterer/aframe-click-drag-component"></script>
   <script>
     registerAframeClickDragComponent(window.AFRAME);
   </script>
