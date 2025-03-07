@@ -3,13 +3,13 @@
 
 
 aframe-extras@^7.4.0:
-  version "7.4.0"
-  resolved "https://registry.npmjs.org/aframe-extras/-/aframe-extras-7.4.0.tgz"
-  integrity sha512-Yqn0DkDPJLyCc2OQ0QsvwJIHsrnyScQGarb59uO7aT3U2MmOttjEWuhzzB9yyovcpf4h5gMyE3hDTH78hI4ucA==
+  version "7.5.4"
+  resolved "https://registry.yarnpkg.com/aframe-extras/-/aframe-extras-7.5.4.tgz#1da1ad571f7366aa16a481ebbe76d7b1b25f6684"
+  integrity sha512-BWgVqzGh67hSqLGjCyBtXW4Auuf45fs+TwzIyK2Lsh2Wy36mNETwJfFxOR1i1OFEGEEYTMpbpGhMN6rbSdqc0w==
   dependencies:
-    nipplejs "^0.10.1"
-    three "^0.159.0"
-    three-pathfinding "^1.2.0"
+    nipplejs "^0.10.2"
+    three "^0.164.0"
+    three-pathfinding "^1.3.0"
 
 ansi-regex@^2.0.0:
   version "2.0.0"
@@ -1316,10 +1316,10 @@ nan@^2.12.1:
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.19.0.tgz#bb58122ad55a6c5bc973303908d5b16cfdd5a8c0"
   integrity sha512-nO1xXxfh/RWNxfd/XPfbIfFk5vgLsAxUR9y5O0cHMJu/AW9U95JLXqthYHjEp+8gQ5p96K9jUp8nbVOxCdRbtw==
 
-nipplejs@^0.10.1:
-  version "0.10.1"
-  resolved "https://registry.npmjs.org/nipplejs/-/nipplejs-0.10.1.tgz"
-  integrity sha512-BuKBDfdd7BVK6E7sivHwrRPh9TETsHuHEwuT95nAjRz2uJu5roYngNs+BdRe8nYf8mP6OZ9aRqdgMlqVsDMRcw==
+nipplejs@^0.10.2:
+  version "0.10.2"
+  resolved "https://registry.yarnpkg.com/nipplejs/-/nipplejs-0.10.2.tgz#0e8f5346bd60f7a0fe0d44c856bc1654cde2b70c"
+  integrity sha512-XGxFY8C2DOtobf1fK+MXINTzkkXJLjZDDpfQhOUZf4TSytbc9s4bmA0lB9eKKM8iDivdr9NQkO7DpIQfsST+9g==
 
 normalize-path@^2.0.1:
   version "2.0.1"
@@ -1567,15 +1567,15 @@ supports-color@^2.0.0:
   version "2.0.0"
   resolved "https://registry.npmjs.org/supports-color/-/supports-color-2.0.0.tgz"
 
-three-pathfinding@^1.2.0:
-  version "1.2.0"
-  resolved "https://registry.npmjs.org/three-pathfinding/-/three-pathfinding-1.2.0.tgz"
-  integrity sha512-TlIfy+mLOdP7OhQG4Mn1dNONYbhu2Xe+AD7jL8SbdKdAHxH/TF68svpk2c8UrSfR/3YWQ87Tq/lp5HQO/QuaMw==
+three-pathfinding@^1.3.0:
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/three-pathfinding/-/three-pathfinding-1.3.0.tgz#70fe3d1f9c7f3f1ced457ef1c45160dd63992c1c"
+  integrity sha512-LKxMI3/YqdMYvt6AdE2vB6s5ueDFczt/DWoxhtPNgRsH6E0D8LMYQxz+eIrmKo0MQpDvMVzXYUMBk+b86+k97w==
 
-three@^0.159.0:
-  version "0.159.0"
-  resolved "https://registry.npmjs.org/three/-/three-0.159.0.tgz"
-  integrity sha512-eCmhlLGbBgucuo4VEA9IO3Qpc7dh8Bd4VKzr7WfW4+8hMcIfoAVi1ev0pJYN9PTTsCslbcKgBwr2wNZ1EvLInA==
+three@^0.164.0:
+  version "0.164.1"
+  resolved "https://registry.yarnpkg.com/three/-/three-0.164.1.tgz#b742f76bd8dfd3736ba0d86a12dfddb73c5cdcc0"
+  integrity sha512-iC/hUBbl1vzFny7f5GtqzVXYjMJKaTPxiCxXfrvVdBi1Sf+jhd1CAkitiFwC7mIBFCo3MrDLJG97yisoaWig0w==
 
 to-fast-properties@^1.0.1:
   version "1.0.2"
